@@ -21,8 +21,8 @@ export const BLOCK_NAME = 'mrc_gamepad_boolean';
 /** The suffix added to the button's method for each value of the action field. */
 const ACTION_SUFFIXES: Record<Gamepad.GamepadAction, string> = {
   [Gamepad.GamepadAction.IS_DOWN]: '',
-  [Gamepad.GamepadAction.WAS_PRESSED]: 'Pressed',
-  [Gamepad.GamepadAction.WAS_RELEASED]: 'Released',
+  [Gamepad.GamepadAction.WAS_PRESSED]: '_pressed',
+  [Gamepad.GamepadAction.WAS_RELEASED]: '_released',
 };
 
 export const setup = function() {
@@ -63,5 +63,5 @@ function methodForButton(
     return '';
   }
 
-  return Gamepad.getPythonForGamepad(gamepad) + '.' + config.method + suffix + '()';
+  return Gamepad.getPythonForGamepad(gamepad) + '.' + config.method + suffix + '(' + (config.args ?? '') + ')';
 }

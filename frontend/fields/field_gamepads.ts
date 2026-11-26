@@ -7,7 +7,7 @@
 
 import * as Blockly from 'blockly/core';
 import * as storageProject from '../storage/project';
-import { GamepadType, GamepadTypeUtils } from '../types/GamepadType';
+import { GAMEPAD_TYPE_NONE, GamepadType, GamepadTypeUtils } from '../types/GamepadType';
 import { FieldDropdownWithBorderRect } from './FieldDropdown';
 import { GamepadDropdownOptionsChange } from './gamepad_dropdown_options_change';
 
@@ -82,7 +82,7 @@ export function createPortField(output?: GamepadOutput): Blockly.FieldDropdown {
         // Only show ports that have gamepads configured (not NONE)
         for (let port = MIN_GAMEPAD_PORT; port <= MAX_GAMEPAD_PORT; port++) {
             const gamepadType = GamepadTypeUtils.getGamepad(port, currentGamepadConfig);
-            if (gamepadType !== GamepadType.NONE) {
+            if (gamepadType !== GAMEPAD_TYPE_NONE) {
                 if (output !== undefined && !supportsOutput(gamepadType, output)) {
                     continue;
                 }
@@ -800,11 +800,14 @@ export function getGamepadType(gamepad: number): GamepadType {
     return GamepadTypeUtils.getGamepad(gamepad, currentGamepadConfig);
 }
 
+/** Returns the name of the robot attribute that holds the controller on the given port. */
+export function getGamepadAttributeName(gamepad: number): string {
+    return 'gamepad_' + gamepad;
+}
+
 /** Returns the python code for the gamepad on the given port. */
 export function getPythonForGamepad(gamepad: number): string {
-    // TODO: When user_controls are implemented in RobotPy, adjust the following line as necesssary,
-    // but for now we need it to access the gamepads from the robot.
-    return 'self.robot.user_controls.get_gamepad(' + gamepad + ')';
+    return 'self.robot.' + getGamepadAttributeName(gamepad);
 }
 
 // Register field types with Blockly

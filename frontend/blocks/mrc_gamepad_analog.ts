@@ -46,6 +46,8 @@ function methodForAxis(gamepad: number, axis: string): string {
   // Get the axis configuration for this gamepad type
   const axisConfig = GamepadTypeUtils.getAxisConfig(gamepadType);
 
+  const config = axisConfig?.get(axis);
+
   return Gamepad.getPythonForGamepad(gamepad) + '.' +
-      (axisConfig?.get(axis)?.method ?? '') + '()';
+      (config?.method ?? '') + '(' + (config?.args ?? '') + ')';
 }

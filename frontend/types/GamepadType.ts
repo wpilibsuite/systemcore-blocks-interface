@@ -6,22 +6,20 @@
 import * as storageProject from '../storage/project';
 import * as GenericGamepad from './hid_devices/gamepad_generic';
 import * as GenericHID from './hid_devices/generic_hid';
-import * as PS5 from './hid_devices/gamepad_ps5';
-import * as PS4 from './hid_devices/gamepad_ps4';
-import * as LogitechF310 from './hid_devices/gamepad_logitech_f310';
-import * as Xbox from './hid_devices/gamepad_xbox';
+import * as Hids from './hid_devices/first_ds_hids';
 import * as None from './hid_devices/none';
 
-/** Gamepad controller types. */
-export enum GamepadType {
-  NONE = 'None',
-  GAMEPAD_GENERIC = 'Generic Gamepad',
-  GAMEPAD_LOGITECH_F310 = 'Logitech F310',
-  GAMEPAD_XBOX = 'XBOX Gamepad',
-  GAMEPAD_PS4 = 'PlayStation 4 Gamepad',
-  GAMEPAD_PS5 = 'PlayStation 5 Gamepad',
-  GENERIC_HID = 'Generic HID',
-}
+/**
+ * A gamepad controller type. This is what is saved in the project's gamepad config, and what is
+ * shown to the user, so the values of existing types must not change.
+ */
+export type GamepadType = string;
+
+/** The type for a port that has no controller. */
+export const GAMEPAD_TYPE_NONE: GamepadType = 'None';
+
+/** The type used when the saved type is not one that we know. */
+const GAMEPAD_TYPE_GENERIC_GAMEPAD: GamepadType = 'Generic Gamepad';
 
 interface GamepadConfigModule {
   getButtonConfig: () => Map<string, GenericGamepad.ConfigEntry> | null;
@@ -30,53 +28,80 @@ interface GamepadConfigModule {
   getLEDConfig: () => Map<string, GenericGamepad.ConfigEntry> | null;
 }
 
-const configMap = new Map<GamepadType, GamepadConfigModule>([
-    [GamepadType.GAMEPAD_LOGITECH_F310, LogitechF310],
-    [GamepadType.GAMEPAD_PS4, PS4],
-    [GamepadType.GAMEPAD_PS5, PS5],
-    [GamepadType.GAMEPAD_XBOX, Xbox],
-    [GamepadType.GENERIC_HID, GenericHID],
-    [GamepadType.GAMEPAD_GENERIC, GenericGamepad],
-    [GamepadType.NONE, None],
-]);
+interface GamepadTypeInfo {
+  type: GamepadType;
+  icon: string;
+  /** The name of the wpilib class that is instantiated for the type, or null if there is none. */
+  wpilibClassName: string | null;
+  config: GamepadConfigModule;
+}
 
-/** Utility functions for working with GamepadType enum. */
+/**
+ * Makes the info for a type whose buttons, axes, and capabilities come from first_ds_hids.json.
+ * hidClassName is the ClassName of the controller in that file. The wpilib class is the ClassName
+ * followed by 'Controller'.
+ */
+function makeHidInfo(type: GamepadType, hidClassName: string): GamepadTypeInfo {
+  return {
+    type,
+    icon: '🎮',
+    wpilibClassName: hidClassName + 'Controller',
+    config: Hids.forClass(hidClassName),
+  };
+}
+
+/** All of the types, in the order they are shown to the user. */
+const GAMEPAD_TYPES: GamepadTypeInfo[] = [
+  { type: GAMEPAD_TYPE_NONE, icon: '❌', wpilibClassName: null, config: None },
+  { type: GAMEPAD_TYPE_GENERIC_GAMEPAD, icon: '🎮', wpilibClassName: 'Gamepad', config: GenericGamepad },
+  makeHidInfo('Logitech F310', 'LogitechF310'),
+  makeHidInfo('XBOX Gamepad', 'Xbox'),
+  makeHidInfo('PlayStation 4 Gamepad', 'DualShock4'),
+  makeHidInfo('PlayStation 5 Gamepad', 'DualSense'),
+  makeHidInfo('Steam Controller', 'Steam'),
+  makeHidInfo('Switch Pro Controller', 'SwitchPro'),
+  makeHidInfo('Switch 2 Pro Controller', 'Switch2Pro'),
+  { type: 'Generic HID', icon: '🕹️', wpilibClassName: 'GenericHID', config: GenericHID },
+];
+
+const GAMEPAD_TYPE_INFOS = new Map<GamepadType, GamepadTypeInfo>(
+    GAMEPAD_TYPES.map((info) => [info.type, info]));
+
+/** Utility functions for working with gamepad types. */
 export const GamepadTypeUtils = {
+  /** Gets all of the types, in the order they are shown to the user. */
+  getAllTypes(): GamepadType[] {
+    return GAMEPAD_TYPES.map((info) => info.type);
+  },
+
   getGamepad(port: number, gamepadConfig: storageProject.GamepadConfig): GamepadType {
     const value = gamepadConfig[port];
     if (value) {
-      // Validate that the value is actually a valid GamepadType enum value
-      if (Object.values(GamepadType).includes(value as GamepadType)) {
-        return value as GamepadType;
+      // Validate that the value is actually a known type.
+      if (GAMEPAD_TYPE_INFOS.has(value)) {
+        return value;
       }
-      // If invalid, map to GAMEPAD_GENERIC
-      return GamepadType.GAMEPAD_GENERIC;
+      // If invalid, map to the generic gamepad.
+      return GAMEPAD_TYPE_GENERIC_GAMEPAD;
     }
-    return GamepadType.NONE;
+    return GAMEPAD_TYPE_NONE;
+  },
+
+  /** Gets the name of the wpilib class that is instantiated for the given type, or null for NONE. */
+  getWpilibClassName(type: GamepadType): string | null {
+    return GAMEPAD_TYPE_INFOS.get(type)?.wpilibClassName ?? null;
   },
 
   /** Gets icon for gamepad type. */
   getGamepadIcon(type: GamepadType): string {
-    switch (type) {
-      case GamepadType.GENERIC_HID:
-        return '🕹️'; // Joystick icon
-      case GamepadType.NONE:
-        return '❌'; // No controller        
-      case GamepadType.GAMEPAD_GENERIC:
-      case GamepadType.GAMEPAD_LOGITECH_F310:        
-      case GamepadType.GAMEPAD_XBOX:
-      case GamepadType.GAMEPAD_PS4:
-      case GamepadType.GAMEPAD_PS5:        
-      default:
-        return '🎮'; // Generic gamepad icon
-    }
+    return GAMEPAD_TYPE_INFOS.get(type)?.icon ?? '🎮';
   },
 
   /** Removes all NONE entries from gamepad config. */
   removeNoneEntries(gamepadConfig: storageProject.GamepadConfig): storageProject.GamepadConfig {
     const cleaned: storageProject.GamepadConfig = {};
     for (const port in gamepadConfig) {
-      if (gamepadConfig[port] !== GamepadType.NONE) {
+      if (gamepadConfig[port] !== GAMEPAD_TYPE_NONE) {
         cleaned[port] = gamepadConfig[port];
       }
     }
@@ -87,15 +112,15 @@ export const GamepadTypeUtils = {
   getDefaultGamepadConfig(): storageProject.GamepadConfig {
     const config: storageProject.GamepadConfig = {};
 
-    config[0] = GamepadType.GAMEPAD_LOGITECH_F310; // Default to Logitech F310 on port 0
-    config[1] = GamepadType.GAMEPAD_LOGITECH_F310; // Default to Logitech F310 on port 1
+    config[0] = 'Logitech F310'; // Default to Logitech F310 on port 0
+    config[1] = 'Logitech F310'; // Default to Logitech F310 on port 1
     return config;
   },
 
   getPortsWithControllers(gamepadConfig: storageProject.GamepadConfig): number[] {
     const ports: number[] = [];
     for (const port in gamepadConfig) {
-      if (gamepadConfig[port] !== GamepadType.NONE) {
+      if (gamepadConfig[port] !== GAMEPAD_TYPE_NONE) {
         ports.push(Number(port));
       }
     }
@@ -104,25 +129,21 @@ export const GamepadTypeUtils = {
 
   /** Gets button configuration for the specified gamepad type. */
   getButtonConfig(type: GamepadType): Map<string, GenericGamepad.ConfigEntry> | null {
-    const config = configMap.get(type);
-    return config ? config.getButtonConfig() : null;
+    return GAMEPAD_TYPE_INFOS.get(type)?.config.getButtonConfig() ?? null;
   },
 
   /** Gets axis configuration for the specified gamepad type. */
   getAxisConfig(type: GamepadType): Map<string, GenericGamepad.ConfigEntry> | null {
-    const config = configMap.get(type);
-    return config ? config.getAxisConfig() : null;
-  },        
+    return GAMEPAD_TYPE_INFOS.get(type)?.config.getAxisConfig() ?? null;
+  },
 
   /** Gets rumble configuration for the specified gamepad type. */
   getRumbleConfig(type: GamepadType): Map<string, GenericGamepad.RumbleConfigEntry> | null {
-    const config = configMap.get(type);
-    return config ? config.getRumbleConfig() : null;
+    return GAMEPAD_TYPE_INFOS.get(type)?.config.getRumbleConfig() ?? null;
   },
 
   /** Gets LED configuration for the specified gamepad type. */
   getLEDConfig(type: GamepadType): Map<string, GenericGamepad.ConfigEntry> | null {
-    const config = configMap.get(type);
-    return config ? config.getLEDConfig() : null;
+    return GAMEPAD_TYPE_INFOS.get(type)?.config.getLEDConfig() ?? null;
   },
 };

@@ -338,6 +338,7 @@ export const TabContent = React.forwardRef<TabContentRef, TabContentProps>(({
     if (blocklyComponent.current && module) {
       if (module.moduleType === storageModule.ModuleType.ROBOT && editorInstance) {
         extendedPythonGenerator.setAllOpModeDetails(editorInstance.getAllOpModeDetails());
+        extendedPythonGenerator.setGamepadConfig(project.projectInfo.gamepadConfig);
       }
       const code = extendedPythonGenerator.mrcWorkspaceToCode(
         blocklyComponent.current.getBlocklyWorkspace(),
@@ -345,7 +346,7 @@ export const TabContent = React.forwardRef<TabContentRef, TabContentProps>(({
       );
       setGeneratedCode(code);
     }
-  }, [triggerPythonRegeneration, blocklyComponent, module, editorInstance]);
+  }, [triggerPythonRegeneration, blocklyComponent, module, editorInstance, project.projectInfo.gamepadConfig]);
 
   /** Cleanup on unmount. */
   React.useEffect(() => {

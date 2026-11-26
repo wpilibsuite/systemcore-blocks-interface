@@ -127,7 +127,7 @@ function createSampleWhenGamepadButtonBlock(): toolboxItems.Block {
             type: MRC_GAMEPAD_BOOLEAN,
             fields: {
                 [Gamepad.PORT_FIELD_NAME]: '0',
-                [Gamepad.BUTTON_FIELD_NAME]: 'SOUTH_FACE',
+                [Gamepad.BUTTON_FIELD_NAME]: '0', // The button at index 0 is A on an XBOX controller.
                 [Gamepad.ACTION_FIELD_NAME]: 'IS_DOWN',
             },
         },

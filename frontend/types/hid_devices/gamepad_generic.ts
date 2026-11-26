@@ -7,8 +7,12 @@ import * as Blockly from 'blockly';
 
 export type ConfigEntry = {
   display: () => string;
+  // The name of the method on the wpilib class. For buttons, this is the name of the method that
+  // returns whether the button is down. The names of the methods for pressed and released are made
+  // by adding '_pressed' and '_released'.
   method: string;
-  comment: string;
+  // The arguments to pass to the method, if any (for example, the button number).
+  args?: string;
 };
 
 export type RumbleConfigEntry = {
@@ -16,43 +20,54 @@ export type RumbleConfigEntry = {
   rumbleType: string;
 };
 
-const BUTTON_CONFIG : Map<string, ConfigEntry> = new Map([
-    ['SOUTH_FACE', { display: () => Blockly.Msg['GAMEPAD_BUTTON_SOUTH_FACE'], method: 'get_face_down_button', comment: '' }],
-    ['EAST_FACE', { display: () => Blockly.Msg['GAMEPAD_BUTTON_EAST_FACE'], method: 'get_face_right_button', comment: '' }],
-    ['WEST_FACE', { display: () => Blockly.Msg['GAMEPAD_BUTTON_WEST_FACE'], method: 'get_face_left_button', comment: '' }],
-    ['NORTH_FACE', { display: () => Blockly.Msg['GAMEPAD_BUTTON_NORTH_FACE'], method: 'get_face_up_button', comment: '' }],
-    ['BACK', { display: () => Blockly.Msg['GAMEPAD_BUTTON_BACK'], method: 'get_back_button', comment: '' }],
-    ['GUIDE', { display: () => Blockly.Msg['GAMEPAD_BUTTON_GUIDE'], method: 'get_guide_button', comment: '' }],
-    ['START', { display: () => Blockly.Msg['GAMEPAD_BUTTON_START'], method: 'get_start_button', comment: '' }],
-    ['LEFT_STICK', { display: () => Blockly.Msg['GAMEPAD_BUTTON_LEFT_STICK'], method: 'get_left_stick_button', comment: '' }],
-    ['RIGHT_STICK', { display: () => Blockly.Msg['GAMEPAD_BUTTON_RIGHT_STICK'], method: 'get_right_stick_button', comment: '' }],
-    ['LEFT_BUMPER', { display: () => Blockly.Msg['GAMEPAD_BUTTON_LEFT_BUMPER'], method: 'get_left_bumper_button', comment: '' }],
-    ['RIGHT_BUMPER', { display: () => Blockly.Msg['GAMEPAD_BUTTON_RIGHT_BUMPER'], method: 'get_right_bumper_button', comment: '' }],
-    ['DPAD_UP', { display: () => Blockly.Msg['GAMEPAD_BUTTON_DPAD_UP'], method: 'get_dpad_up_button', comment: '' }],
-    ['DPAD_DOWN', { display: () => Blockly.Msg['GAMEPAD_BUTTON_DPAD_DOWN'], method: 'get_dpad_down_button', comment: '' }],
-    ['DPAD_LEFT', { display: () => Blockly.Msg['GAMEPAD_BUTTON_DPAD_LEFT'], method: 'get_dpad_left_button', comment: '' }],
-    ['DPAD_RIGHT', { display: () => Blockly.Msg['GAMEPAD_BUTTON_DPAD_RIGHT'], method: 'get_dpad_right_button', comment: '' }],
-    ['MISC1', { display: () => Blockly.Msg['GAMEPAD_BUTTON_MISC1'], method: 'get_misc1_button', comment: '' }],
-    ['RIGHT_PADDLE_1', { display: () => Blockly.Msg['GAMEPAD_BUTTON_RIGHT_PADDLE_1'], method: 'get_right_paddle1_button', comment: '' }],
-    ['LEFT_PADDLE_1', { display: () => Blockly.Msg['GAMEPAD_BUTTON_LEFT_PADDLE_1'], method: 'get_left_paddle1_button', comment: '' }],
-    ['RIGHT_PADDLE_2', { display: () => Blockly.Msg['GAMEPAD_BUTTON_RIGHT_PADDLE_2'], method: 'get_right_paddle2_button', comment: '' }],
-    ['LEFT_PADDLE_2', { display: () => Blockly.Msg['GAMEPAD_BUTTON_LEFT_PADDLE_2'], method: 'get_left_paddle2_button', comment: '' }],
-    ['TOUCHPAD', { display: () => Blockly.Msg['GAMEPAD_BUTTON_TOUCHPAD'], method: 'get_touchpad_button', comment: '' }],
-    ['MISC2', { display: () => Blockly.Msg['GAMEPAD_BUTTON_MISC2'], method: 'get_misc2_button', comment: '' }],
-    ['MISC3', { display: () => Blockly.Msg['GAMEPAD_BUTTON_MISC3'], method: 'get_misc3_button', comment: '' }],
-    ['MISC4', { display: () => Blockly.Msg['GAMEPAD_BUTTON_MISC4'], method: 'get_misc4_button', comment: '' }],
-    ['MISC5', { display: () => Blockly.Msg['GAMEPAD_BUTTON_MISC5'], method: 'get_misc5_button', comment: '' }],
-    ['MISC6', { display: () => Blockly.Msg['GAMEPAD_BUTTON_MISC6'], method: 'get_misc6_button', comment: '' }],
-]);
+// The buttons of wpilib.Gamepad, in the order of the button indexes of wpilib.Gamepad.Button.
+// Each is the end of the name of the Blockly message with the display name, and the method.
+// The key of each entry in the button config is its index, which is the same for the same
+// physical button on every controller in first_ds_hids.json.
+const BUTTONS: [string, string][] = [
+    ['SOUTH_FACE', 'get_face_down_button'],
+    ['EAST_FACE', 'get_face_right_button'],
+    ['WEST_FACE', 'get_face_left_button'],
+    ['NORTH_FACE', 'get_face_up_button'],
+    ['BACK', 'get_back_button'],
+    ['GUIDE', 'get_guide_button'],
+    ['START', 'get_start_button'],
+    ['LEFT_STICK', 'get_left_stick_button'],
+    ['RIGHT_STICK', 'get_right_stick_button'],
+    ['LEFT_BUMPER', 'get_left_bumper_button'],
+    ['RIGHT_BUMPER', 'get_right_bumper_button'],
+    ['DPAD_UP', 'get_dpad_up_button'],
+    ['DPAD_DOWN', 'get_dpad_down_button'],
+    ['DPAD_LEFT', 'get_dpad_left_button'],
+    ['DPAD_RIGHT', 'get_dpad_right_button'],
+    ['MISC1', 'get_misc1_button'],
+    ['RIGHT_PADDLE_1', 'get_right_paddle1_button'],
+    ['LEFT_PADDLE_1', 'get_left_paddle1_button'],
+    ['RIGHT_PADDLE_2', 'get_right_paddle2_button'],
+    ['LEFT_PADDLE_2', 'get_left_paddle2_button'],
+    ['TOUCHPAD', 'get_touchpad_button'],
+    ['MISC2', 'get_misc2_button'],
+    ['MISC3', 'get_misc3_button'],
+    ['MISC4', 'get_misc4_button'],
+    ['MISC5', 'get_misc5_button'],
+    ['MISC6', 'get_misc6_button'],
+];
 
-const AXIS_CONFIG  : Map<string, ConfigEntry> = new Map([
-    ['LEFT_STICK_X', { display: () => Blockly.Msg['GAMEPAD_AXIS_LEFT_STICK_X'], method: 'get_left_x', comment: '' }],
-    ['LEFT_STICK_Y', { display: () => Blockly.Msg['GAMEPAD_AXIS_LEFT_STICK_Y'], method: 'get_left_y', comment: '' }],
-    ['RIGHT_STICK_X', { display: () => Blockly.Msg['GAMEPAD_AXIS_RIGHT_STICK_X'], method: 'get_right_x', comment: '' }],
-    ['RIGHT_STICK_Y', { display: () => Blockly.Msg['GAMEPAD_AXIS_RIGHT_STICK_Y'], method: 'get_right_y', comment: '' }],
-    ['LEFT_TRIGGER', { display: () => Blockly.Msg['GAMEPAD_AXIS_LEFT_TRIGGER'], method: 'get_left_trigger_axis', comment: '' }],
-    ['RIGHT_TRIGGER', { display: () => Blockly.Msg['GAMEPAD_AXIS_RIGHT_TRIGGER'], method: 'get_right_trigger_axis', comment: '' }],
-]);
+// The axes of wpilib.Gamepad, in the order of the axis indexes of wpilib.Gamepad.Axis.
+const AXES: [string, string][] = [
+    ['LEFT_STICK_X', 'get_left_x'],
+    ['LEFT_STICK_Y', 'get_left_y'],
+    ['RIGHT_STICK_X', 'get_right_x'],
+    ['RIGHT_STICK_Y', 'get_right_y'],
+    ['LEFT_TRIGGER', 'get_left_trigger'],
+    ['RIGHT_TRIGGER', 'get_right_trigger'],
+];
+
+const BUTTON_CONFIG : Map<string, ConfigEntry> = new Map(BUTTONS.map(([name, method], index) =>
+    [String(index), { display: () => Blockly.Msg['GAMEPAD_BUTTON_' + name], method }]));
+
+const AXIS_CONFIG  : Map<string, ConfigEntry> = new Map(AXES.map(([name, method], index) =>
+    [String(index), { display: () => Blockly.Msg['GAMEPAD_AXIS_' + name], method }]));
 
 const RUMBLE_CONFIG : Map<string, RumbleConfigEntry> = new Map([
     ['LEFT_RUMBLE', { display: () => Blockly.Msg['GAMEPAD_RUMBLE_LEFT'], rumbleType: 'LEFT_RUMBLE'}],
@@ -62,7 +77,7 @@ const RUMBLE_CONFIG : Map<string, RumbleConfigEntry> = new Map([
 ]);
 
 const LED_CONFIG : Map<string, ConfigEntry> = new Map([
-    ['LEDS', { display: () => Blockly.Msg['GAMEPAD_LEDS'], method: 'set_leds', comment: ''}],
+    ['LEDS', { display: () => Blockly.Msg['GAMEPAD_LEDS'], method: 'set_leds'}],
 ]);
 
 

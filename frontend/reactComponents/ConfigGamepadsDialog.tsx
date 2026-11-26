@@ -83,7 +83,7 @@ export default function ConfigGamepadsDialog(props: ConfigGamepadsDialogProps) {
           value={controllerType}
           onChange={(value) => handleGamepadTypeChange(record.gamepadId, value as GamepadType)}
           style={{ width: '100%' }}
-          options={Object.values(GamepadType).map(type => ({
+          options={GamepadTypeUtils.getAllTypes().map(type => ({
             value: type,
             label: (
               <span>
